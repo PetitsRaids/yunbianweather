@@ -1,5 +1,6 @@
 package com.example.yunbianweather;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -24,6 +25,7 @@ import com.example.yunbianweather.gson.AQI;
 import com.example.yunbianweather.gson.Forecast;
 import com.example.yunbianweather.gson.Suggestions;
 import com.example.yunbianweather.gson.Weather;
+import com.example.yunbianweather.service.AutoUpdateService;
 import com.example.yunbianweather.util.HttpUtil;
 import com.example.yunbianweather.util.Utility;
 
@@ -53,7 +55,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     private TextView airQualityText, aqiText, pm25Text;
 
-    private String weatherId;
+    public String weatherId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,33 +88,24 @@ public class WeatherActivity extends AppCompatActivity {
         String weatherInfo = sharedPreferences.getString("weather", null);
         String aqiInfo = sharedPreferences.getString("aqi", null);
         String bingPic = sharedPreferences.getString("bing_pic", null);
-        weatherId = getIntent().getStringExtra("weather_id");
         if (weatherInfo == null) {
+            weatherId = getIntent().getStringExtra("weather_id");
             scrollView.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
+            requestBingPicture();
         } else {
             Weather weather = Utility.handleWeatherResponse(weatherInfo);
             weatherId = weather.basic.cId;
             showWeatherInfo(weather);
             AQI aqi = Utility.handleAQIResponse(aqiInfo);
             showAqiInfo(aqi);
-        }
-//        if (aqiInfo == null) {
-//            requestAQI(weatherId);
-//        } else {
-//
-//        }
-        if (bingPic == null) {
-            requestBingPicture();
-        } else {
             Glide.with(this).load(bingPic).into(background);
         }
         navButton.setOnClickListener((v -> drawerLayout.openDrawer(GravityCompat.START)));
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
-        swipeRefresh.setOnRefreshListener(() -> {
-            requestWeather(weatherId);
-//            requestAQI(weatherId);
-        });
+        swipeRefresh.setOnRefreshListener(() ->
+            requestWeather(weatherId)
+        );
     }
 
     public void requestWeather(String weatherId) {
@@ -131,7 +124,6 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseTest = response.body().string();
-                Log.d("yunbian", responseTest);
                 Weather weather = Utility.handleWeatherResponse(responseTest);
                 runOnUiThread(() -> {
                     if (weather != null && weather.status.equals("ok")) {
@@ -170,16 +162,15 @@ public class WeatherActivity extends AppCompatActivity {
                         editor.apply();
                         showAqiInfo(aqi);
                     } else {
-                        Toast.makeText(WeatherActivity.this, "空气质量获取失败", Toast.LENGTH_SHORT).show();
+                        airQualityText.setText("");
+                        aqiText.setText("");
+                        pm25Text.setText("");
+                        Toast.makeText(WeatherActivity.this, "没有查询到空气数据", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         });
     }
-
-//    private void requestAQI(String weatherId) {
-//        String
-//    }
 
     private void requestBingPicture() {
         String address = "http://guolin.tech/api/bing_pic";
@@ -244,6 +235,8 @@ public class WeatherActivity extends AppCompatActivity {
             suggestionLayout.addView(view);
         }
         scrollView.setVisibility(View.VISIBLE);
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
     private void showAqiInfo(AQI aqi) {
