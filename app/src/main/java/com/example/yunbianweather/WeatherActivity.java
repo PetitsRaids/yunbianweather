@@ -49,7 +49,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     private TextView titleCity, titleUpdateTime;
 
-    private TextView degreeNow, weatherInfoNow;
+    private TextView degreeNow, weatherInfoNow, humidityNow, visibilityNow;
 
     private LinearLayout forecastLayout, suggestionLayout;
 
@@ -77,6 +77,8 @@ public class WeatherActivity extends AppCompatActivity {
         titleUpdateTime = findViewById(R.id.update_time);
         degreeNow = findViewById(R.id.temperature_now);
         weatherInfoNow = findViewById(R.id.weather_info);
+        humidityNow = findViewById(R.id.humidity_now);
+        visibilityNow = findViewById(R.id.visibility_now);
         forecastLayout = findViewById(R.id.forecast_layout);
         suggestionLayout = findViewById(R.id.suggestion_layout);
         airQualityText = findViewById(R.id.air_quality_text);
@@ -202,11 +204,15 @@ public class WeatherActivity extends AppCompatActivity {
         String updateTime = weather.update.updateTime;
         String degree = weather.now.temperatureNow + "℃";
         String weatherInfo = weather.now.weatherNow;
+        String humidity = weather.now.relativeHumidity + "%";
+        String visibility = weather.now.visibility + "km";
         titleCity.setText(cityName);
         titleUpdateTime.setText(updateTime);
         degreeNow.setText(degree);
         weatherInfoNow.setText(weatherInfo);
         forecastLayout.removeAllViews();
+        humidityNow.setText(humidity);
+        visibilityNow.setText(visibility);
 
         for (Forecast forecast : weather.forecastList) {
             View view = LayoutInflater.from(this)
