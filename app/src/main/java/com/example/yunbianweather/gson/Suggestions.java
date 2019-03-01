@@ -8,7 +8,7 @@ public class Suggestions {
     public String liveIndex;
 
     @SerializedName("txt")
-    public String drescription;
+    public String description;
 
     public String type;
 }

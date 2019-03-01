@@ -7,4 +7,6 @@
     <string name="pm25">PM2.5指数</string>
     <string name="lifestyle">生活建议</string>
     <string name="bg_description">the background picture</string>
+    <string name="humidity">湿度</string>
+    <string name="visibility">能见度</string>
 </resources>
