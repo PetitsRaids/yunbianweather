@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">YunBianWeather</string>
+    <string name="forecast">预报</string>
+    <string name="air_quality">空气质量</string>
+    <string name="air_quality_level">空气质量等级</string>
+    <string name="aqi_data">AQI指数</string>
+    <string name="pm25">PM2.5指数</string>
+    <string name="lifestyle">生活建议</string>
+    <string name="bg_description">the background picture</string>
 </resources>

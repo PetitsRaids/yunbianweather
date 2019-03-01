@@ -5,6 +5,9 @@ import android.text.TextUtils;
 import com.example.yunbianweather.db.City;
 import com.example.yunbianweather.db.County;
 import com.example.yunbianweather.db.Province;
+import com.example.yunbianweather.gson.AQI;
+import com.example.yunbianweather.gson.Weather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,5 +72,29 @@ public class Utility {
             }
         }
         return false;
+    }
+
+    public static Weather handleWeatherResponse(String response){
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather6");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent, Weather.class);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static AQI handleAQIResponse(String response){
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather6");
+            String aqiContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(aqiContent, AQI.class);
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

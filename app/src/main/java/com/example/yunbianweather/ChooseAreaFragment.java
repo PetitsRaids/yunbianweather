@@ -1,5 +1,6 @@
 package com.example.yunbianweather;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -84,6 +85,11 @@ public class ChooseAreaFragment extends Fragment {
             } else if (currentLevel == LEVEL_CITY) {
                 selectedCity = cityList.get(position);
                 queryCounty();
+            }else if (currentLevel == LEVEL_COUNTY){
+                Intent intent = new Intent(getContext(), WeatherActivity.class);
+                intent.putExtra("weather_id", countyList.get(position).getWeatherId());
+                startActivity(intent);
+                getActivity().finish();
             }
         });
         backButton.setOnClickListener((view) -> {
