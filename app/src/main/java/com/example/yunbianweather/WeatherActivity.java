@@ -105,9 +105,12 @@ public class WeatherActivity extends AppCompatActivity {
         }
         navButton.setOnClickListener((v -> drawerLayout.openDrawer(GravityCompat.START)));
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
-        swipeRefresh.setOnRefreshListener(() ->
-            requestWeather(weatherId)
-        );
+        swipeRefresh.setOnRefreshListener(() -> {
+            requestWeather(weatherId);
+            requestBingPicture();
+        });
+        requestWeather(weatherId);
+        requestBingPicture();
     }
 
     public void requestWeather(String weatherId) {
@@ -192,9 +195,9 @@ public class WeatherActivity extends AppCompatActivity {
                         .getDefaultSharedPreferences(WeatherActivity.this).edit();
                 editor.putString("bing_pic", responseText);
                 editor.apply();
-                runOnUiThread(() -> {
-                    Glide.with(WeatherActivity.this).load(responseText).into(background);
-                });
+                runOnUiThread(() ->
+                    Glide.with(WeatherActivity.this).load(responseText).into(background)
+                );
             }
         });
     }
