@@ -5,12 +5,13 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -36,6 +37,8 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
+
+    private CoordinatorLayout coordinatorLayout;
 
     private ImageView background;
 
@@ -68,6 +71,7 @@ public class WeatherActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_weather);
 
+        coordinatorLayout = findViewById(R.id.coordinator);
         background = findViewById(R.id.background);
         drawerLayout = findViewById(R.id.drawer_layout);
         swipeRefresh = findViewById(R.id.refresh_weather);
@@ -111,6 +115,7 @@ public class WeatherActivity extends AppCompatActivity {
         });
         requestWeather(weatherId);
         requestBingPicture();
+        coordinatorLayout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 
     public void requestWeather(String weatherId) {
@@ -118,7 +123,7 @@ public class WeatherActivity extends AppCompatActivity {
                 weatherId + "&key=34fcb36bcc8a42d2b0fe9b549cce8f8c";
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
                 runOnUiThread(() -> {
                     Toast.makeText(WeatherActivity.this,
                             "天气数据获取失败", Toast.LENGTH_SHORT).show();
@@ -127,7 +132,7 @@ public class WeatherActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 String responseTest = response.body().string();
                 Weather weather = Utility.handleWeatherResponse(responseTest);
                 runOnUiThread(() -> {
@@ -204,7 +209,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     private void showWeatherInfo(Weather weather) {
         String cityName = weather.basic.cityName;
-        String updateTime = weather.update.updateTime;
+        String updateTime = weather.update.updateTime.split(" ")[1];
         String degree = weather.now.temperatureNow + "℃";
         String weatherInfo = weather.now.weatherNow;
         String humidity = weather.now.relativeHumidity + "%";
@@ -243,6 +248,7 @@ public class WeatherActivity extends AppCompatActivity {
             descriptionView.setText(suggestion.description);
             suggestionLayout.addView(view);
         }
+        Toast.makeText(WeatherActivity.this, "天气已更新", Toast.LENGTH_SHORT).show();
         scrollView.setVisibility(View.VISIBLE);
         Intent intent = new Intent(this, AutoUpdateService.class);
         startService(intent);
